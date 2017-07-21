@@ -5,13 +5,13 @@ var AB = require('another-brick');
 function FieldValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-field-validation')) ? JSON.parse(this.el.getAttribute('data-field-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-field-validation')) ? JSON.parse(this.el.getAttribute('data-field-validation')) : {};
   this.settings   = window.AB.extend(true, options, dataOptions);
 
   this.inputEls   = this.el.querySelectorAll('input, select, textarea');
   this.inputEl    = this.inputEls[0]; // no need to loop through inputs to get validity
-  this.errorEl    = this.el.querySelector('[data-field-validation-error]');
-  this.formEl     = this.el.closest('[data-form-validation]');
+  this.errorEl    = this.el.querySelector('[data-ab-field-validation-error]');
+  this.formEl     = this.el.closest('[data-ab-form-validation]');
   this.isValid    = this.inputEl.validity.valid; // validity status
 
   this._init();
@@ -28,6 +28,7 @@ FieldValidation.prototype = {
         errorId   = 'AB-'+ Math.random().toString(36); // random ID
     this.errorEl  = this.errorEl.appendChild(errorList);
 
+    // accessibility
     this.errorEl.setAttribute('role', 'alert');
     this.errorEl.id = errorId; // for aria-describedby
 
@@ -41,6 +42,7 @@ FieldValidation.prototype = {
   _events: function() {
     var that = this;
 
+    // validation while typing
     if (this.settings.typing)
       this.inputEl.addEventListener('keyup', that.checkValidity.bind(that));
 
@@ -50,12 +52,16 @@ FieldValidation.prototype = {
   },
 
   checkValidity: function(mode) {
-    var keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
+    var keyupOnEmptyField
     this.isValid = this.inputEl.validity.valid;
 
-    // no need to check when...
-    if (keyupOnEmptyField)
-      return this;
+    if (mode) {
+      // no need to check when...
+      keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
+
+      if (keyupOnEmptyField)
+        return this;
+    }
 
     this.isValid ?
       this._setValid() : this._setInvalid(mode);
@@ -73,15 +79,17 @@ FieldValidation.prototype = {
   },
 
   _setInvalid: function(mode) {
-    var newList = '';
+    var newList = ''; // error list
 
+    // when submiting form we keep customError
     if (this.inputEl.validity.customError && mode === 'submit')
-      newList = this.errorEl.innerHTML;
-    else
-      this.inputEl.setCustomValidity('');
+      return this;
 
-    // building error list
+    this.inputEl.setCustomValidity('');
+
+    // building error list based on HTML5 form API
     for (var prop in this.inputEl.validity) {
+      // don't check those informations
       if (prop === 'valid' || prop === 'customError')
         continue;
 
@@ -99,7 +107,7 @@ FieldValidation.prototype = {
     this.inputEl.setCustomValidity(message);
 
     this.isValid = this.inputEl.validity.valid;
-    this.updateDom();
+    this._updateDom();
     this.errorEl.innerHTML = '<li>'+ message +'</li>';
   },
 
@@ -119,7 +127,7 @@ FieldValidation.prototype = {
 
 // prepare input inside that form
 window.abFieldValidation = function(form, options) {
-  var elements = form.querySelectorAll('[data-field-validation]');
+  var elements = form.querySelectorAll('[data-ab-field-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
     if (elements[i].fieldValidation) continue;
     elements[i].fieldValidation = new FieldValidation(elements[i], options);

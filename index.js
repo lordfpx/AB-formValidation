@@ -6,8 +6,10 @@ var abFieldValidation = require('./AB-fieldValidation');
 var defaults = {
     classFormValid: 'is-valid-form',
     classFormInvalid: 'is-invalid-form',
+
     classInputValid: 'is-valid',
     classInputInvalid: 'is-invalid',
+
     classBtnDisabled: 'is-disabled',
 
     typing: false,
@@ -28,18 +30,23 @@ var defaults = {
 function FormValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-form-validation')) ? JSON.parse(this.el.getAttribute('data-form-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-form-validation')) ? JSON.parse(this.el.getAttribute('data-form-validation')) : {};
   this.settings   = window.AB.extend(true, defaults, options, dataOptions);
 
-  this.submitBtn  = this.el.querySelector('[data-form-validation-submit]');
+  this.submitBtn  = this.el.querySelector('[data-ab-form-validation-submit]');
   this.isValid    = this.el.checkValidity(); // form status
+
+  if (!this.submitBtn) {
+    console.warn('The submit button is missing');
+    return;
+  }
 
   this._init();
 }
 
 FormValidation.prototype = {
   _init: function() {
-    // prepare fields
+    // prepare fields validation
     window.abFieldValidation(this.el, this.settings);
 
     // prepare form
@@ -52,17 +59,18 @@ FormValidation.prototype = {
   _events: function() {
     var that = this;
 
-    that.el.addEventListener('submit', that.onSubmit.bind(that));
+    that.el.addEventListener('submit', that._onSubmit.bind(that));
   },
 
-  onSubmit: function(e) {
+  _onSubmit: function(e) {
     this._update(e);
 
-    var fields = this.el.querySelectorAll('[data-field-validation]');
+    var fields = this.el.querySelectorAll('[data-ab-field-validation]');
     for (var i = 0, len = fields.length; i < len; i++) {
       fields[i].fieldValidation.checkValidity('submit');
     }
 
+    // trigger event for submit for external usage
     var event = new CustomEvent('onFormValidationSubmit', { detail: this });
     document.dispatchEvent(event);
   },
@@ -97,7 +105,7 @@ FormValidation.prototype = {
 };
 
 window.abFormValidation = function(options) {
-  var elements = document.querySelectorAll('[data-form-validation]');
+  var elements = document.querySelectorAll('[data-ab-form-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
     if (elements[i].formValidation) continue;
     elements[i].formValidation = new FormValidation(elements[i], options);
