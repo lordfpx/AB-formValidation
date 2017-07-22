@@ -76,10 +76,6 @@ FormValidation.prototype = {
     }
 
     this.checkValidation();
-
-    // trigger event for submit for external usage
-    var event = new CustomEvent('submit.ab-formvalidation', { detail: this });
-    document.dispatchEvent(event);
   },
 
   // external usage to update form
@@ -88,14 +84,23 @@ FormValidation.prototype = {
   },
 
   _update: function(e) {
+    if (e) e.preventDefault(); // prevent submitting
+
     this.isValid = this.el.checkValidity();
 
-    if (this.isValid) {
+    if (this.isValid)
       this.setValid();
-    } else {
-      if (e) e.preventDefault(); // prevent submitting
+    else
       this.setInvalid();
-    }
+
+    // trigger event for submit for external usage
+    var event = new CustomEvent('submit.ab-formvalidation', {
+      detail: {
+        form: this.el,
+        valid: this.isValid
+      }
+    });
+    document.dispatchEvent(event);
   },
 
   setValid: function() {

@@ -93,16 +93,16 @@ That allows you to add custom field validation on your side or to set server sid
 * field: an event is triggered on each field validation
   ```
   document.addEventListener('checked.ab-fieldvalidation', function(event) {
-    console.log('event.detail');
-    // return all informations on the checked field
+    // event.detail.field: checked field
+    // event.detail.valid: field validity (boolean)
   });
   ```
 
 * form: an event is triggered on each form submit
   ```
   document.addEventListener('submit.ab-formvalidation', function(event) {
-    console.log('event.detail');
-    // return all informations on the submited form
+    // event.detail.form: submited form
+    // event.detail.valid: form validity (boolean)
   });
   ```
 

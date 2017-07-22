@@ -70,10 +70,15 @@ FieldValidation.prototype = {
       this._setValid() : this._setInvalid(mode);
 
     // trigger event for external usage
-    var event = new CustomEvent('checked.ab-fieldvalidation', { detail: this });
+    var event = new CustomEvent('checked.ab-fieldvalidation', {
+      detail: {
+        field: this.el,
+        valid: this.isValid
+      }
+    });
     document.dispatchEvent(event);
 
-    // update form status
+    // update form status (when submit, it's already done)
     if (mode !== 'submit')
       this.formEl.abFormValidation.checkValidation();
   },
