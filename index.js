@@ -1,36 +1,41 @@
-var AB = require('another-brick');
+/*!
+ * AB-formValidation
+ */
+
+/*
+TODO:
+- prevent form validation on server side error
+*/
+
+var AB                = require('another-brick');
 var abFieldValidation = require('./AB-fieldValidation');
 
 'use strict';
 
 var defaults = {
-    classFormValid: 'is-valid-form',
-    classFormInvalid: 'is-invalid-form',
-
-    classInputValid: 'is-valid',
-    classInputInvalid: 'is-invalid',
-
+    classValid:       'is-valid',
+    classInvalid:     'isnt-valid',
     classBtnDisabled: 'is-disabled',
 
     typing: false,
 
     validations: {
-      badInput: 'error: badInput',
+      badInput:        'error: badInput',
       patternMismatch: 'error: patternMismatch',
-      rangeOverflow: 'error: rangeOverflow',
-      rangeUnderflow: 'error: rangeUnderflow',
-      stepMismatch: 'error: stepMismatch',
-      tooLong: 'error: tooLong',
-      tooShort: 'error: tooShort',
-      typeMismatch: 'error: typeMismatch',
-      valueMissing: 'error: valueMissing'
+      rangeOverflow:   'error: rangeOverflow',
+      rangeUnderflow:  'error: rangeUnderflow',
+      stepMismatch:    'error: stepMismatch',
+      tooLong:         'error: tooLong',
+      tooShort:        'error: tooShort',
+      typeMismatch:    'error: typeMismatch',
+      valueMissing:    'error: valueMissing'
     }
   };
 
 function FormValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-form-validation')) ? JSON.parse(this.el.getAttribute('data-form-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-form-validation')) ? JSON.parse(this.el.getAttribute('data-ab-form-validation')) : {};
   this.settings   = window.AB.extend(true, defaults, options, dataOptions);
 
   this.submitBtn  = this.el.querySelector('[data-ab-form-validation-submit]');
@@ -67,11 +72,13 @@ FormValidation.prototype = {
 
     var fields = this.el.querySelectorAll('[data-ab-field-validation]');
     for (var i = 0, len = fields.length; i < len; i++) {
-      fields[i].fieldValidation.checkValidity('submit');
+      fields[i].abFieldValidation.checkValidity('submit');
     }
 
+    this.checkValidation();
+
     // trigger event for submit for external usage
-    var event = new CustomEvent('onFormValidationSubmit', { detail: this });
+    var event = new CustomEvent('submit.ab-formvalidation', { detail: this });
     document.dispatchEvent(event);
   },
 
@@ -93,21 +100,21 @@ FormValidation.prototype = {
 
   setValid: function() {
     this.submitBtn.classList.remove(this.settings.classBtnDisabled);
-    this.el.classList.remove(this.settings.classFormInvalid);
-    this.el.classList.add(this.settings.classFormValid);
+    this.el.classList.remove(this.settings.classInvalid);
+    this.el.classList.add(this.settings.classValid);
   },
 
   setInvalid: function() {
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
-    this.el.classList.add(this.settings.classFormInvalid);
-    this.el.classList.remove(this.settings.classFormValid);
+    this.el.classList.add(this.settings.classInvalid);
+    this.el.classList.remove(this.settings.classValid);
   }
 };
 
 window.abFormValidation = function(options) {
   var elements = document.querySelectorAll('[data-ab-form-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
-    if (elements[i].formValidation) continue;
-    elements[i].formValidation = new FormValidation(elements[i], options);
+    if (elements[i].abFormValidation) continue;
+    elements[i].abFormValidation = new FormValidation(elements[i], options);
   }
 };

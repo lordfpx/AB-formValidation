@@ -1,3 +1,7 @@
+/*!
+ * AB-fieldValidation
+ */
+
 var AB = require('another-brick');
 
 'use strict';
@@ -52,12 +56,11 @@ FieldValidation.prototype = {
   },
 
   checkValidity: function(mode) {
-    var keyupOnEmptyField
     this.isValid = this.inputEl.validity.valid;
 
     if (mode) {
       // no need to check when...
-      keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
+      var keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
 
       if (keyupOnEmptyField)
         return this;
@@ -67,11 +70,12 @@ FieldValidation.prototype = {
       this._setValid() : this._setInvalid(mode);
 
     // trigger event for external usage
-    var event = new CustomEvent('onFieldValidation', { detail: this });
+    var event = new CustomEvent('checked.ab-fieldvalidation', { detail: this });
     document.dispatchEvent(event);
 
     // update form status
-    this.formEl.formValidation.checkValidation();
+    if (mode !== 'submit')
+      this.formEl.abFormValidation.checkValidation();
   },
 
   _setValid: function() {
@@ -116,11 +120,11 @@ FieldValidation.prototype = {
 
     if (this.isValid) {
       this.errorEl.innerHTML = '';
-      this.el.classList.add(this.settings.classInputValid);
-      this.el.classList.remove(this.settings.classInputInvalid);
+      this.el.classList.add(this.settings.classValid);
+      this.el.classList.remove(this.settings.classInvalid);
     } else {
-      this.el.classList.add(this.settings.classInputInvalid);
-      this.el.classList.remove(this.settings.classInputValid);
+      this.el.classList.add(this.settings.classInvalid);
+      this.el.classList.remove(this.settings.classValid);
     }
   }
 };
@@ -129,7 +133,7 @@ FieldValidation.prototype = {
 window.abFieldValidation = function(form, options) {
   var elements = form.querySelectorAll('[data-ab-field-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
-    if (elements[i].fieldValidation) continue;
-    elements[i].fieldValidation = new FieldValidation(elements[i], options);
+    if (elements[i].abFieldValidation) continue;
+    elements[i].abFieldValidation = new FieldValidation(elements[i], options);
   }
 };
