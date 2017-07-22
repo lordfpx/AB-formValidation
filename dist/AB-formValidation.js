@@ -130,48 +130,55 @@ window.AB = {
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var AB = __webpack_require__(0);
+/*!
+ * AB-formValidation
+ */
+
+var AB                = __webpack_require__(0);
 var abFieldValidation = __webpack_require__(2);
 
 'use strict';
 
 var defaults = {
-    classFormValid: 'is-valid-form',
-    classFormInvalid: 'is-invalid-form',
-    classInputValid: 'is-valid',
-    classInputInvalid: 'is-invalid',
+    classValid:       'is-valid',
+    classInvalid:     'isnt-valid',
     classBtnDisabled: 'is-disabled',
 
     typing: false,
 
     validations: {
-      badInput: 'error: badInput',
+      badInput:        'error: badInput',
       patternMismatch: 'error: patternMismatch',
-      rangeOverflow: 'error: rangeOverflow',
-      rangeUnderflow: 'error: rangeUnderflow',
-      stepMismatch: 'error: stepMismatch',
-      tooLong: 'error: tooLong',
-      tooShort: 'error: tooShort',
-      typeMismatch: 'error: typeMismatch',
-      valueMissing: 'error: valueMissing'
+      rangeOverflow:   'error: rangeOverflow',
+      rangeUnderflow:  'error: rangeUnderflow',
+      stepMismatch:    'error: stepMismatch',
+      tooLong:         'error: tooLong',
+      tooShort:        'error: tooShort',
+      typeMismatch:    'error: typeMismatch',
+      valueMissing:    'error: valueMissing'
     }
   };
 
 function FormValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-form-validation')) ? JSON.parse(this.el.getAttribute('data-form-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-form-validation')) ? JSON.parse(this.el.getAttribute('data-ab-form-validation')) : {};
   this.settings   = window.AB.extend(true, defaults, options, dataOptions);
 
-  this.submitBtn  = this.el.querySelector('[data-form-validation-submit]');
+  this.submitBtn  = this.el.querySelector('[data-ab-form-validation-submit]');
   this.isValid    = this.el.checkValidity(); // form status
+
+  if (!this.submitBtn) {
+    console.warn('The submit button is missing');
+    return;
+  }
 
   this._init();
 }
 
 FormValidation.prototype = {
   _init: function() {
-    // prepare fields
+    // prepare fields validation
     window.abFieldValidation(this.el, this.settings);
 
     // prepare form
@@ -184,18 +191,26 @@ FormValidation.prototype = {
   _events: function() {
     var that = this;
 
-    that.el.addEventListener('submit', that.onSubmit.bind(that));
+    that.el.addEventListener('submit', that._onSubmit.bind(that));
   },
 
-  onSubmit: function(e) {
+  _onSubmit: function(e) {
     this._update(e);
 
-    var fields = this.el.querySelectorAll('[data-field-validation]');
+    var fields = this.el.querySelectorAll('[data-ab-field-validation]');
     for (var i = 0, len = fields.length; i < len; i++) {
-      fields[i].fieldValidation.checkValidity('submit');
+      fields[i].abFieldValidation.checkValidity('submit');
     }
 
-    var event = new CustomEvent('onFormValidationSubmit', { detail: this });
+    this.checkValidation();
+
+    // trigger event for submit for external usage
+    var event = new CustomEvent('submit.ab-formvalidation', {
+      detail: {
+        form: this.el,
+        valid: this.isValid
+      }
+    });
     document.dispatchEvent(event);
   },
 
@@ -205,40 +220,44 @@ FormValidation.prototype = {
   },
 
   _update: function(e) {
+    if (e) e.preventDefault(); // prevent submitting
+
     this.isValid = this.el.checkValidity();
 
-    if (this.isValid) {
+    if (this.isValid)
       this.setValid();
-    } else {
-      if (e) e.preventDefault(); // prevent submitting
+    else
       this.setInvalid();
-    }
   },
 
   setValid: function() {
     this.submitBtn.classList.remove(this.settings.classBtnDisabled);
-    this.el.classList.remove(this.settings.classFormInvalid);
-    this.el.classList.add(this.settings.classFormValid);
+    this.el.classList.remove(this.settings.classInvalid);
+    this.el.classList.add(this.settings.classValid);
   },
 
   setInvalid: function() {
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
-    this.el.classList.add(this.settings.classFormInvalid);
-    this.el.classList.remove(this.settings.classFormValid);
+    this.el.classList.add(this.settings.classInvalid);
+    this.el.classList.remove(this.settings.classValid);
   }
 };
 
 window.abFormValidation = function(options) {
-  var elements = document.querySelectorAll('[data-form-validation]');
+  var elements = document.querySelectorAll('[data-ab-form-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
-    if (elements[i].formValidation) continue;
-    elements[i].formValidation = new FormValidation(elements[i], options);
+    if (elements[i].abFormValidation) continue;
+    elements[i].abFormValidation = new FormValidation(elements[i], options);
   }
 };
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
+
+/*!
+ * AB-fieldValidation
+ */
 
 var AB = __webpack_require__(0);
 
@@ -247,13 +266,13 @@ var AB = __webpack_require__(0);
 function FieldValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-field-validation')) ? JSON.parse(this.el.getAttribute('data-field-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-field-validation')) ? JSON.parse(this.el.getAttribute('data-field-validation')) : {};
   this.settings   = window.AB.extend(true, options, dataOptions);
 
   this.inputEls   = this.el.querySelectorAll('input, select, textarea');
   this.inputEl    = this.inputEls[0]; // no need to loop through inputs to get validity
-  this.errorEl    = this.el.querySelector('[data-field-validation-error]');
-  this.formEl     = this.el.closest('[data-form-validation]');
+  this.errorEl    = this.el.querySelector('[data-ab-field-validation-error]');
+  this.formEl     = this.el.closest('[data-ab-form-validation]');
   this.isValid    = this.inputEl.validity.valid; // validity status
 
   this._init();
@@ -270,6 +289,7 @@ FieldValidation.prototype = {
         errorId   = 'AB-'+ Math.random().toString(36); // random ID
     this.errorEl  = this.errorEl.appendChild(errorList);
 
+    // accessibility
     this.errorEl.setAttribute('role', 'alert');
     this.errorEl.id = errorId; // for aria-describedby
 
@@ -283,6 +303,7 @@ FieldValidation.prototype = {
   _events: function() {
     var that = this;
 
+    // validation while typing
     if (this.settings.typing)
       this.inputEl.addEventListener('keyup', that.checkValidity.bind(that));
 
@@ -292,22 +313,31 @@ FieldValidation.prototype = {
   },
 
   checkValidity: function(mode) {
-    var keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
     this.isValid = this.inputEl.validity.valid;
 
-    // no need to check when...
-    if (keyupOnEmptyField)
-      return this;
+    if (mode) {
+      // no need to check when...
+      var keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
+
+      if (keyupOnEmptyField)
+        return this;
+    }
 
     this.isValid ?
       this._setValid() : this._setInvalid(mode);
 
     // trigger event for external usage
-    var event = new CustomEvent('onFieldValidation', { detail: this });
+    var event = new CustomEvent('checked.ab-fieldvalidation', {
+      detail: {
+        field: this.el,
+        valid: this.isValid
+      }
+    });
     document.dispatchEvent(event);
 
-    // update form status
-    this.formEl.formValidation.checkValidation();
+    // update form status (when submit, it's already done)
+    if (mode !== 'submit')
+      this.formEl.abFormValidation.checkValidation();
   },
 
   _setValid: function() {
@@ -315,15 +345,17 @@ FieldValidation.prototype = {
   },
 
   _setInvalid: function(mode) {
-    var newList = '';
+    var newList = ''; // error list
 
+    // when submiting form we keep customError
     if (this.inputEl.validity.customError && mode === 'submit')
-      newList = this.errorEl.innerHTML;
-    else
-      this.inputEl.setCustomValidity('');
+      return this;
 
-    // building error list
+    this.inputEl.setCustomValidity('');
+
+    // building error list based on HTML5 form API
     for (var prop in this.inputEl.validity) {
+      // don't check those informations
       if (prop === 'valid' || prop === 'customError')
         continue;
 
@@ -341,7 +373,7 @@ FieldValidation.prototype = {
     this.inputEl.setCustomValidity(message);
 
     this.isValid = this.inputEl.validity.valid;
-    this.updateDom();
+    this._updateDom();
     this.errorEl.innerHTML = '<li>'+ message +'</li>';
   },
 
@@ -350,21 +382,21 @@ FieldValidation.prototype = {
 
     if (this.isValid) {
       this.errorEl.innerHTML = '';
-      this.el.classList.add(this.settings.classInputValid);
-      this.el.classList.remove(this.settings.classInputInvalid);
+      this.el.classList.add(this.settings.classValid);
+      this.el.classList.remove(this.settings.classInvalid);
     } else {
-      this.el.classList.add(this.settings.classInputInvalid);
-      this.el.classList.remove(this.settings.classInputValid);
+      this.el.classList.add(this.settings.classInvalid);
+      this.el.classList.remove(this.settings.classValid);
     }
   }
 };
 
 // prepare input inside that form
 window.abFieldValidation = function(form, options) {
-  var elements = form.querySelectorAll('[data-field-validation]');
+  var elements = form.querySelectorAll('[data-ab-field-validation]');
   for (var i = 0, len = elements.length; i < len; i++) {
-    if (elements[i].fieldValidation) continue;
-    elements[i].fieldValidation = new FieldValidation(elements[i], options);
+    if (elements[i].abFieldValidation) continue;
+    elements[i].abFieldValidation = new FieldValidation(elements[i], options);
   }
 };
 

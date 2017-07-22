@@ -2,11 +2,6 @@
  * AB-formValidation
  */
 
-/*
-TODO:
-- prevent form validation on server side error
-*/
-
 var AB                = require('another-brick');
 var abFieldValidation = require('./AB-fieldValidation');
 
@@ -76,6 +71,15 @@ FormValidation.prototype = {
     }
 
     this.checkValidation();
+
+    // trigger event for submit for external usage
+    var event = new CustomEvent('submit.ab-formvalidation', {
+      detail: {
+        form: this.el,
+        valid: this.isValid
+      }
+    });
+    document.dispatchEvent(event);
   },
 
   // external usage to update form
@@ -92,15 +96,6 @@ FormValidation.prototype = {
       this.setValid();
     else
       this.setInvalid();
-
-    // trigger event for submit for external usage
-    var event = new CustomEvent('submit.ab-formvalidation', {
-      detail: {
-        form: this.el,
-        valid: this.isValid
-      }
-    });
-    document.dispatchEvent(event);
   },
 
   setValid: function() {

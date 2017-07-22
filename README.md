@@ -15,7 +15,9 @@ or
 > yarn add ab-formvalidation
 ```
 
-It's used (customized version) on French website [ENGIE](https://particuliers.engie.fr/).
+It's used (a customized version) on French website [ENGIE](https://particuliers.engie.fr/).
+
+---
 
 ## setup
 Set default settings in data-ab-form-validation attribute
@@ -45,9 +47,9 @@ Set default settings in data-ab-form-validation attribute
 }
 ```
 
-You can bypass these settings for specific fields.
+You can override those settings on specific fields.
 
-
+---
 ## setup specific field validation
 Set specific field settings in data-ab-field-validation attribute.
 
@@ -71,8 +73,29 @@ Set specific field settings in data-ab-field-validation attribute.
 }
 ```
 
+---
 ## External access
-That allows you to add custom field validation on your side or to set server side custom errors.
+
+* FORM: an event is triggered on each form submit
+  Real form submition (ajax or not) is to be done on your side. To do so, listen to this specific event:
+
+  ```
+  document.addEventListener('submit.ab-formvalidation', function(event) {
+    // event.detail.form: submited form
+    // event.detail.valid: form validity (boolean)
+  });
+  ```
+
+  example:
+  ```
+  document.addEventListener('submit.ab-formvalidation', function(event) {
+    if (event.detail.valid) {
+      event.detail.form.submit();
+
+      // or call your own function for ajax
+    }
+  });
+  ```
 
 * Check field validity from your scripts
   ```
@@ -90,20 +113,10 @@ That allows you to add custom field validation on your side or to set server sid
   myField.abFieldValidation.setCustomError('My custom error message');
   ```
 
-* field: an event is triggered on each field validation
+* FIELD: an event is triggered on each field validation
   ```
   document.addEventListener('checked.ab-fieldvalidation', function(event) {
     // event.detail.field: checked field
     // event.detail.valid: field validity (boolean)
   });
   ```
-
-* form: an event is triggered on each form submit
-  ```
-  document.addEventListener('submit.ab-formvalidation', function(event) {
-    // event.detail.form: submited form
-    // event.detail.valid: form validity (boolean)
-  });
-  ```
-
-
