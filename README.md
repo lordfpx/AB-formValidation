@@ -19,58 +19,108 @@ It's used (a customized version) on French website [ENGIE](https://particuliers.
 
 ---
 
-## setup
-Set default settings in data-ab-form-validation attribute
+## LOADING
+
+### Classic usage
+Just load the script on your page, just before `</body>`.
+
+**No need to load [another-brick](https://github.com/lordfpx/AB) since it's already included. You can use its features of course (read respective readme).**
+
+### As a module
+The best solution is to use browserify or Webpack and import 'abFormValidation'.
 
 ```
-{
-  // You can use your own classes
-  classValid:       'is-valid',
-  classInvalid:     'isnt-valid',
-  classBtnDisabled: 'is-disabled',
+import abFormValidation from 'ab-formvalidation';
+```
 
-  // default realtime validation
-  typing: false,
+---
 
-  // default validation messages
-  validations: {
-    badInput:        'error: badInput',
-    patternMismatch: 'error: patternMismatch',
-    rangeOverflow:   'error: rangeOverflow',
-    rangeUnderflow:  'error: rangeUnderflow',
-    stepMismatch:    'error: stepMismatch',
-    tooLong:         'error: tooLong',
-    tooShort:        'error: tooShort',
-    typeMismatch:    'error: typeMismatch',
-    valueMissing:    'error: valueMissing'
+## SETUP FORM
+
+### DOM
+* `data-ab-form-validation` must be placed on yout `<form>`.
+
+* `data-ab-form-validation-submit` must be present on the submit `<button>` or `<input>`.
+
+Then set default settings in the `data-ab-form-validation` attribute placed on your `<form>`. It must be in a JSON format:
+
+```
+data-ab-form-validation='{
+  "classValid":       "is-valid",
+  "classInvalid":     "isnt-valid",
+  "classBtnDisabled": "is-disabled",
+  "typing": false,
+  "validations": {
+    "badInput":        "error: badInput",
+    "patternMismatch": "error: patternMismatch",
+    "rangeOverflow":   "error: rangeOverflow",
+    "rangeUnderflow":  "error: rangeUnderflow",
+    "stepMismatch":    "error: stepMismatch",
+    "tooLong":         "error: tooLong",
+    "tooShort":        "error: tooShort",
+    "typeMismatch":    "error: typeMismatch",
+    "valueMissing":    "error: valueMissing"
   }
-}
+}'
 ```
+
+* Personnalize dynamic classes:
+  ```
+  "classValid":       "is-valid",
+  "classInvalid":     "isnt-valid",
+  "classBtnDisabled": "is-disabled",
+  ```
+
+* Choose realtime field validation or not:
+  ```
+  "typing": false,
+  ```
+
+* Personalize error messages
+  ```
+  "validations": {
+    "badInput":        "error: badInput",
+    "patternMismatch": "error: patternMismatch",
+    "rangeOverflow":   "error: rangeOverflow",
+    "rangeUnderflow":  "error: rangeUnderflow",
+    "stepMismatch":    "error: stepMismatch",
+    "tooLong":         "error: tooLong",
+    "tooShort":        "error: tooShort",
+    "typeMismatch":    "error: typeMismatch",
+    "valueMissing":    "error: valueMissing"
+  }
+  ```
 
 You can override those settings on specific fields.
 
----
-## setup specific field validation
-Set specific field settings in data-ab-field-validation attribute.
+### JavaScript
+Initialize it from your script:
 
 ```
-{
-  // realtime validation
-  typing: false,
+window.abFormValidation();
+```
 
-  // validation messages
-  validations: {
-    badInput:        'error: badInput',
-    patternMismatch: 'error: patternMismatch',
-    rangeOverflow:   'error: rangeOverflow',
-    rangeUnderflow:  'error: rangeUnderflow',
-    stepMismatch:    'error: stepMismatch',
-    tooLong:         'error: tooLong',
-    tooShort:        'error: tooShort',
-    typeMismatch:    'error: typeMismatch',
-    valueMissing:    'error: valueMissing'
+If your form is injected with a XMLHttpRequest, just run the same function again.
+
+---
+## SETUP FIELDS
+Only fields with `data-ab-field-validation` will be evaluated. Set specific settings in that attribute if needed.
+
+```
+data-ab-field-validation='{
+  "typing": false,
+  "validations": {
+    "badInput":        "error: badInput",
+    "patternMismatch": "error: patternMismatch",
+    "rangeOverflow":   "error: rangeOverflow",
+    "rangeUnderflow":  "error: rangeUnderflow",
+    "stepMismatch":    "error: stepMismatch",
+    "tooLong":         "error: tooLong",
+    "tooShort":        "error: tooShort",
+    "typeMismatch":    "error: typeMismatch",
+    "valueMissing":    "error: valueMissing"
   }
-}
+}'
 ```
 
 ---
@@ -97,7 +147,7 @@ Set specific field settings in data-ab-field-validation attribute.
   });
   ```
 
-* Check field validity from your scripts
+* If you want to Check a specific field validity from your scripts
   ```
   // select the parent with the data-ab-field-validation attribute
   var myField = document.querySelector('...');
@@ -105,7 +155,7 @@ Set specific field settings in data-ab-field-validation attribute.
   myField.abFieldValidation.checkValidity();
   ```
 
-* Set custom error status on a field
+* To set custom error status on a field (after an ajax validation for ex.)
   ```
   // select the parent with the data-ab-field-validation attribute
   var myField = document.querySelector('...');
