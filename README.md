@@ -4,7 +4,7 @@ AB-formValidation is a vanilla JavaScript that validate forms. Simply use HTML5 
 
 It's damn small: about **1800 bytes** (uglyfied and GZipped).
 
-- [codepen](hhttps://codepen.io/lordfpx/pen/RgdygX?editors=0010)
+- [codepen](https://codepen.io/lordfpx/pen/RgdygX?editors=0010)
 - [NPM](https://www.npmjs.com/package/ab-formvalidation)
 
 ```
