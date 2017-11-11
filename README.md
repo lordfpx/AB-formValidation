@@ -12,6 +12,8 @@ It's damn small: about <strong>1800 bytes</strong> (uglyfied and GZipped).
 Have a look at the <a href="https://codepen.io/lordfpx/pen/RgdygX?editors=0010" target="_blank">Codepen demonstration</a>.
 </p>
 
+<a href="https://codeclimate.com/github/lordfpx/AB-formValidation/maintainability"><img src="https://api.codeclimate.com/v1/badges/39290718f775d259c551/maintainability" /></a>
+
 
 <h2 align="center">Install</h2>
 
