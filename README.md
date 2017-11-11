@@ -1,55 +1,61 @@
-# AB-formValidation
+<h1 align="center">AB-formValidation</h1>
 
-AB-formValidation is a vanilla JavaScript that validate forms. Simply use HTML5 form API and AB-formValidation validate.
+<p align="center">
+AB-formValidation is a small, detpendency free, vanilla JavaScript component that validate fields and forms followinf the native HTML5 Form API. It's used (a customized version) on the French website of <a href="https://particuliers.engie.fr" target="_blank">ENGIE</a>.
+</P>
 
-It's damn small: about **1800 bytes** (uglyfied and GZipped).
+<p align="center">
+It's damn small: about <strong>1800 bytes</strong> (uglyfied and GZipped).
+</p>
 
-- [codepen](https://codepen.io/lordfpx/pen/RgdygX?editors=0010)
-- [NPM](https://www.npmjs.com/package/ab-formvalidation)
+<p align="center">
+Have a look at the <a href="https://codepen.io/lordfpx/pen/RgdygX?editors=0010" target="_blank">Codepen demonstration</a>.
+</p>
 
+
+<h2 align="center">Install</h2>
+
+Install with npm:
 ```
-> npm install ab-formvalidation
+npm install --save ab-formvalidation
+````
+
+Install with yarn:
 ```
-or
-```
-> yarn add ab-formvalidation
+yarn add ab-formvalidation
 ```
 
-It's used (a customized version) on French website [ENGIE](https://particuliers.engie.fr/).
-
----
-
-## LOADING
-
-### Classic usage
-Just load the script on your page, just before `</body>`.
-
-**No need to load [another-brick](https://github.com/lordfpx/AB) since it's already included. You can use its features of course (read respective readme).**
-
-### As a module
-The best solution is to use browserify or Webpack and import 'abFormValidation'.
-
-```
+You can then import it in your JS bundle (webpack, ES6, browserify...):
+```js
 import abFormValidation from 'ab-formvalidation';
 ```
 
----
+Or loading the js right before `</body>` if you are not using a builder.
 
-## SETUP FORM
 
-### DOM
-* `data-ab-form-validation` must be placed on yout `<form>`.
 
-* `data-ab-form-validation-submit` must be present on the submit `<button>` or `<input>`.
+<h2 align="center">Setting up a Form</h2>
 
-Then set default settings in the `data-ab-form-validation` attribute placed on your `<form>`. It must be in a JSON format:
+- `data-ab-form-validation` attribute must be placed on your `<form>` element.
 
-```
-data-ab-form-validation='{
-  "classValid":       "is-valid",
-  "classInvalid":     "isnt-valid",
-  "classBtnDisabled": "is-disabled",
-  "typing": false,
+- `data-ab-form-validation-submit` must be placed on the submit `<button type="submit">` or `<input type="submit">` element.
+
+- run inside your JavaScript: `window.abFormValidation();`. If your form is injected with XMLHttpRequest, just run the same function again in the callback.
+
+
+
+<h2 align="center">Defining default settings</h2>
+
+Default settings for each fields can be defined in your HTML or in your Javascript, You can of course override those settings on each fields:
+
+### HTML
+
+```html
+<form data-ab-form-validation='{
+  "classValid":        "is-valid",
+  "classInvalid":      "isnt-valid",
+  "classBtnDisabled":  "is-disabled",
+  "typing":            false,
   "validations": {
     "badInput":        "error: badInput",
     "patternMismatch": "error: patternMismatch",
@@ -61,53 +67,67 @@ data-ab-form-validation='{
     "typeMismatch":    "error: typeMismatch",
     "valueMissing":    "error: valueMissing"
   }
-}'
+}'>
+  ...
+</form>
 ```
-
-* Personnalize dynamic classes:
-  ```
-  "classValid":       "is-valid",
-  "classInvalid":     "isnt-valid",
-  "classBtnDisabled": "is-disabled",
-  ```
-
-* Choose realtime field validation or not:
-  ```
-  "typing": false,
-  ```
-
-* Personalize error messages
-  ```
-  "validations": {
-    "badInput":        "error: badInput",
-    "patternMismatch": "error: patternMismatch",
-    "rangeOverflow":   "error: rangeOverflow",
-    "rangeUnderflow":  "error: rangeUnderflow",
-    "stepMismatch":    "error: stepMismatch",
-    "tooLong":         "error: tooLong",
-    "tooShort":        "error: tooShort",
-    "typeMismatch":    "error: typeMismatch",
-    "valueMissing":    "error: valueMissing"
-  }
-  ```
-
-You can override those settings on specific fields.
 
 ### JavaScript
-Initialize it from your script:
-
+```js
+window.abFormValidation({
+  "classValid":        "is-valid",
+  "classInvalid":      "isnt-valid",
+  "classBtnDisabled":  "is-disabled",
+  "typing":            false,
+  "validations": {
+    "badInput":        "error: badInput",
+    "patternMismatch": "error: patternMismatch",
+    "rangeOverflow":   "error: rangeOverflow",
+    "rangeUnderflow":  "error: rangeUnderflow",
+    "stepMismatch":    "error: stepMismatch",
+    "tooLong":         "error: tooLong",
+    "tooShort":        "error: tooShort",
+    "typeMismatch":    "error: typeMismatch",
+    "valueMissing":    "error: valueMissing"
+  }
+});
 ```
-window.abFormValidation();
-```
 
-If your form is injected with a XMLHttpRequest, just run the same function again.
+### Options
+* Personnalize dynamic classes for your styling:
+  ```js
+  "classValid":       "is-valid",
+  "classInvalid":     "isnt-valid",
+  "classBtnDisabled": "is-disabled",
+  ```
 
----
-## SETUP FIELDS
+* Choose realtime field validation (while typing) or not (onChange):
+  ```js
+  "typing": false,
+  ```
+
+* Personalize error messages triggered by HTML5 Form API:
+  ```js
+  "validations": {
+    "badInput":        "error: badInput",
+    "patternMismatch": "error: patternMismatch",
+    "rangeOverflow":   "error: rangeOverflow",
+    "rangeUnderflow":  "error: rangeUnderflow",
+    "stepMismatch":    "error: stepMismatch",
+    "tooLong":         "error: tooLong",
+    "tooShort":        "error: tooShort",
+    "typeMismatch":    "error: typeMismatch",
+    "valueMissing":    "error: valueMissing"
+  }
+  ```
+
+
+<h2 align="center">Defining specific settings for a field</h2>
+
 Only fields with `data-ab-field-validation` will be evaluated. Set specific settings in that attribute if needed.
 
-```
-data-ab-field-validation='{
+```html
+<xxx data-ab-field-validation='{
   "typing": false,
   "validations": {
     "badInput":        "error: badInput",
@@ -120,43 +140,37 @@ data-ab-field-validation='{
     "typeMismatch":    "error: typeMismatch",
     "valueMissing":    "error: valueMissing"
   }
-}'
+}'>
 ```
 
----
-## External access
+
+<h2 align="center">Events and public access</h2>
 
 * FORM: an event is triggered on each form submit
-  Real form submition (ajax or not) is to be done on your side. To do so, listen to this specific event:
+  Real form submition (Ajax or not) is to be done on your side. To do so, listen to this specific event:
 
-  ```
-  document.addEventListener('submit.ab-formvalidation', function(event) {
-    // event.detail.form: submited form
-    // event.detail.valid: form validity (boolean)
-  });
-  ```
+  ```js
+  document.addEventListener('submit.ab-formvalidation', function(e) {
+    // e.detail.form:  submited form
+    // e.detail.valid: form validity (boolean)
 
-  example:
-  ```
-  document.addEventListener('submit.ab-formvalidation', function(event) {
-    if (event.detail.valid) {
-      event.detail.form.submit();
-
-      // or call your own function for ajax
+    if (e.detail.valid) {
+      e.detail.form.submit(); // or call your own Ajax function
     }
   });
   ```
 
-* If you want to Check a specific field validity from your scripts
-  ```
+* FIELD: check a specific field validity from your scripts
+  ```js
   // select the parent with the data-ab-field-validation attribute
   var myField = document.querySelector('...');
 
   myField.abFieldValidation.checkValidity();
+  // return true or false
   ```
 
-* To set custom error status on a field (after an ajax validation for ex.)
-  ```
+* FIELD: set custom error status (after an Ajax validation for ex.)
+  ```js
   // select the parent with the data-ab-field-validation attribute
   var myField = document.querySelector('...');
 
@@ -164,9 +178,9 @@ data-ab-field-validation='{
   ```
 
 * FIELD: an event is triggered on each field validation
-  ```
-  document.addEventListener('checked.ab-fieldvalidation', function(event) {
-    // event.detail.field: checked field
-    // event.detail.valid: field validity (boolean)
+  ```js
+  document.addEventListener('checked.ab-fieldvalidation', function(e) {
+    // e.detail.field: checked field
+    // e.detail.valid: field validity (boolean)
   });
   ```
