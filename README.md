@@ -1,29 +1,24 @@
-<h1 align="center">AB-formValidation</h1>
+# AB-formValidation
 
-<p align="center">
-AB-formValidation is a small, detpendency free, vanilla JavaScript component that validate fields and forms followinf the native HTML5 Form API. It's used (a customized version) on the French website of <a href="https://particuliers.engie.fr" target="_blank">ENGIE</a>.
-</P>
+AB-formValidation is a small, detpendency free, vanilla JavaScript component that validate fields and forms followinf the native HTML5 Form API. It's used (a customized version) on the French website of [ENGIE](https://particuliers.engie.fr).
 
-<p align="center">
-It's damn small: about <strong>1800 bytes</strong> (uglyfied and GZipped).
-</p>
+It's damn small: about **1800 bytes** (uglyfied and GZipped).
 
-<p align="center">
-Have a look at the <a href="https://codepen.io/lordfpx/pen/RgdygX?editors=0010" target="_blank">Codepen demonstration</a>.
-</p>
+Have a look at the [Codepen demonstration](https://codepen.io/lordfpx/pen/RgdygX?editors=0010).
 
-<a href="https://codeclimate.com/github/lordfpx/AB-formValidation/maintainability"><img src="https://api.codeclimate.com/v1/badges/39290718f775d259c551/maintainability" /></a>
+[![Maintainability](https://codeclimate.com/github/lordfpx/AB-formValidation/maintainability)](https://api.codeclimate.com/v1/badges/39290718f775d259c551/maintainability)
 
 
-<h2 align="center">Install</h2>
+
+## Install
 
 Install with npm:
-```
+```bash
 npm install --save ab-formvalidation
 ````
 
 Install with yarn:
-```
+```bash
 yarn add ab-formvalidation
 ```
 
@@ -36,7 +31,7 @@ Or loading the js right before `</body>` if you are not using a builder.
 
 
 
-<h2 align="center">Setting up a Form</h2>
+## Setting up a Form
 
 - `data-ab-form-validation` attribute must be placed on your `<form>` element.
 
@@ -45,36 +40,20 @@ Or loading the js right before `</body>` if you are not using a builder.
 - run inside your JavaScript: `window.abFormValidation();`. If your form is injected with XMLHttpRequest, just run the same function again in the callback.
 
 
-
-<h2 align="center">Defining default settings</h2>
-
-Default settings for each fields can be defined in your HTML or in your Javascript, You can of course override those settings on each fields:
-
 ### HTML
 
-```html
-<form data-ab-form-validation='{
-  "classValid":        "is-valid",
-  "classInvalid":      "isnt-valid",
-  "classBtnDisabled":  "is-disabled",
-  "typing":            false,
-  "validations": {
-    "badInput":        "error: badInput",
-    "patternMismatch": "error: patternMismatch",
-    "rangeOverflow":   "error: rangeOverflow",
-    "rangeUnderflow":  "error: rangeUnderflow",
-    "stepMismatch":    "error: stepMismatch",
-    "tooLong":         "error: tooLong",
-    "tooShort":        "error: tooShort",
-    "typeMismatch":    "error: typeMismatch",
-    "valueMissing":    "error: valueMissing"
-  }
-}'>
+```HTML
+<form data-ab-form-validation>
   ...
+
+  <button type="submit" data-ab-form-validation-submit>Send</button>
 </form>
 ```
 
 ### JavaScript
+
+Default settings for checked fields can be set when initializing the script:
+
 ```js
 window.abFormValidation({
   "classValid":        "is-valid",
@@ -95,7 +74,7 @@ window.abFormValidation({
 });
 ```
 
-### Options
+### Options explained
 * Personnalize dynamic classes for your styling:
   ```js
   "classValid":       "is-valid",
@@ -124,7 +103,7 @@ window.abFormValidation({
   ```
 
 
-<h2 align="center">Defining specific settings for a field</h2>
+## More interesting: define settings for a field
 
 Only fields with `data-ab-field-validation` will be evaluated. Set specific settings in that attribute if needed.
 
@@ -146,7 +125,7 @@ Only fields with `data-ab-field-validation` will be evaluated. Set specific sett
 ```
 
 
-<h2 align="center">Events and public access</h2>
+## Events and public access
 
 * FORM: an event is triggered on each form submit
   Real form submition (Ajax or not) is to be done on your side. To do so, listen to this specific event:
