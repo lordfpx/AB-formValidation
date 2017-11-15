@@ -251,6 +251,7 @@ window.abFormValidation = function(options) {
   }
 };
 
+
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -399,6 +400,7 @@ window.abFieldValidation = function(form, options) {
     elements[i].abFieldValidation = new FieldValidation(elements[i], options);
   }
 };
+
 
 /***/ })
 /******/ ]);

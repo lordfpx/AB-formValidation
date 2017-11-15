@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/lordfpx/AB-formValidation#readme",
   "dependencies": {
-    "another-brick": "git://github.com/lordfpx/AB.git#develop"
+    "another-brick": "^1.2.0"
   },
   "devDependencies": {
     "webpack": "^3.3.0"
