@@ -1,10 +1,10 @@
 # AB-formValidation
 
-AB-formValidation is a small, detpendency free, vanilla JavaScript component that validate fields and forms followinf the native HTML5 Form API. It's used (a customized version) on the French website of [ENGIE](https://particuliers.engie.fr).
+AB-formValidation is a small, detpendency free, vanilla JavaScript component that validate fields and forms following the native HTML5 Form API. It's used (a customized version) on the French website of [ENGIE](https://particuliers.engie.fr).
 
 It's damn small: about **1800 bytes** (uglyfied and GZipped).
 
-Have a look at the [Codepen demonstration](https://codepen.io/lordfpx/pen/RgdygX?editors=0010).
+Have a look at the [CodePen demonstration](https://codepen.io/lordfpx/pen/RgdygX?editors=0010).
 
 [![Maintainability](https://codeclimate.com/github/lordfpx/AB-formValidation/maintainability)](https://api.codeclimate.com/v1/badges/39290718f775d259c551/maintainability)
 
@@ -22,12 +22,12 @@ Install with yarn:
 yarn add ab-formvalidation
 ```
 
-You can then import it in your JS bundle (webpack, ES6, browserify...):
+You can then import it in your JS bundle (webpack, ES6, browserify…):
 ```js
 import abFormValidation from 'ab-formvalidation';
 ```
 
-Or loading the js right before `</body>` if you are not using a builder.
+Or loading the .js file right before `</body>` if you are not using a builder.
 
 
 
@@ -37,14 +37,14 @@ Or loading the js right before `</body>` if you are not using a builder.
 
 - `data-ab-form-validation-submit` must be placed on the submit `<button type="submit">` or `<input type="submit">` element.
 
-- run inside your JavaScript: `window.abFormValidation();`. If your form is injected with XMLHttpRequest, just run the same function again in the callback.
+- run inside your JavaScript: `window.abFormValidation();`. If your form is injected with XMLHttpRequest, you can run the same function again in the callback.
 
 
 ### HTML
 
 ```HTML
 <form data-ab-form-validation>
-  ...
+  …
 
   <button type="submit" data-ab-form-validation-submit>Send</button>
 </form>
@@ -128,7 +128,7 @@ Only fields with `data-ab-field-validation` will be evaluated. Set specific sett
 ## Events and public access
 
 * FORM: an event is triggered on each form submit
-  Real form submition (Ajax or not) is to be done on your side. To do so, listen to this specific event:
+  Real form submition (AJAX or not) is to be done on your side. To do so, listen to this specific event:
 
   ```js
   document.addEventListener('submit.ab-formvalidation', function(e) {
@@ -136,7 +136,7 @@ Only fields with `data-ab-field-validation` will be evaluated. Set specific sett
     // e.detail.valid: form validity (boolean)
 
     if (e.detail.valid) {
-      e.detail.form.submit(); // or call your own Ajax function
+      e.detail.form.submit(); // or call your own AJAX function
     }
   });
   ```
@@ -144,16 +144,16 @@ Only fields with `data-ab-field-validation` will be evaluated. Set specific sett
 * FIELD: check a specific field validity from your scripts
   ```js
   // select the parent with the data-ab-field-validation attribute
-  var myField = document.querySelector('...');
+  var myField = document.querySelector('…');
 
   myField.abFieldValidation.checkValidity();
   // return true or false
   ```
 
-* FIELD: set custom error status (after an Ajax validation for ex.)
+* FIELD: set custom error status (after an AJAX validation for ex.)
   ```js
   // select the parent with the data-ab-field-validation attribute
-  var myField = document.querySelector('...');
+  var myField = document.querySelector('…');
 
   myField.abFieldValidation.setCustomError('My custom error message');
   ```
