@@ -184,7 +184,7 @@ FormValidation.prototype = {
     // prepare form
     this.el.setAttribute('novalidate', 'novalidate');
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
-
+    this.submitBtn.setAttribute("disabled", "disabled");
     this._events();
   },
 
@@ -232,12 +232,14 @@ FormValidation.prototype = {
 
   setValid: function() {
     this.submitBtn.classList.remove(this.settings.classBtnDisabled);
+    this.submitBtn.removeAttribute("disabled");
     this.el.classList.remove(this.settings.classInvalid);
     this.el.classList.add(this.settings.classValid);
   },
 
   setInvalid: function() {
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
+    this.submitBtn.addAttribute("disabled", "disabled");
     this.el.classList.add(this.settings.classInvalid);
     this.el.classList.remove(this.settings.classValid);
   }
