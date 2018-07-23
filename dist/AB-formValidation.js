@@ -288,6 +288,9 @@ FieldValidation.prototype = {
   },
 
   _buildError: function() {
+    if (!this.errorEl) {
+      return this;
+    }
     var errorList = document.createElement('ul'),
         errorId   = 'AB-'+ Math.random().toString(36); // random ID
     this.errorEl  = this.errorEl.appendChild(errorList);
@@ -366,7 +369,9 @@ FieldValidation.prototype = {
         newList += '<li>'+ this.settings.validations[prop] +'</li>';
     }
 
-    this.errorEl.innerHTML = newList;
+    if (this.errorEl) {
+      this.errorEl.innerHTML = newList;
+    }
 
     this._updateDom();
   },
@@ -377,14 +382,18 @@ FieldValidation.prototype = {
 
     this.isValid = this.inputEl.validity.valid;
     this._updateDom();
-    this.errorEl.innerHTML = '<li>'+ message +'</li>';
+    if (this.errorEl) {
+      this.errorEl.innerHTML = '<li>'+ message +'</li>';
+    }
   },
 
   _updateDom: function() {
     this.inputEl.setAttribute('aria-invalid', !this.isValid);
 
     if (this.isValid) {
-      this.errorEl.innerHTML = '';
+      if (this.errorEl) {
+        this.errorEl.innerHTML = '';
+      }
       this.el.classList.add(this.settings.classValid);
       this.el.classList.remove(this.settings.classInvalid);
     } else {
