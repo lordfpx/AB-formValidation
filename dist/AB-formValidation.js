@@ -269,7 +269,7 @@ var AB = __webpack_require__(0);
 function FieldValidation(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-field-validation')) ? JSON.parse(this.el.getAttribute('data-field-validation')) : {};
+  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-field-validation')) ? JSON.parse(this.el.getAttribute('data-ab-field-validation')) : {};
   this.settings   = window.AB.extend(true, options, dataOptions);
 
   this.inputEls   = this.el.querySelectorAll('input, select, textarea');
@@ -321,13 +321,9 @@ FieldValidation.prototype = {
   checkValidity: function(mode) {
     this.isValid = this.inputEl.validity.valid;
 
-    if (mode) {
-      // no need to check when...
-      var keyupOnEmptyField = (mode.type && mode.type === 'keyup' && !this.inputEl.value);
-
-      if (keyupOnEmptyField)
-        return this;
-    }
+    // no validate in those cases
+    if (!this.inputEl.willValidate || this.el.closest('[disabled]'))
+      return this;
 
     this.isValid ?
       this._setValid() : this._setInvalid(mode);
