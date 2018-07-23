@@ -12,7 +12,8 @@ var defaults = {
     classInvalid:     'isnt-valid',
     classBtnDisabled: 'is-disabled',
 
-    typing: false,
+    typing:         false,
+    submitDisabled: true,
 
     validations: {
       badInput:        'error: badInput',
@@ -52,14 +53,15 @@ FormValidation.prototype = {
     // prepare form
     this.el.setAttribute('novalidate', 'novalidate');
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
-    this.submitBtn.disabled = true;
+
+    if (this.settings.submitDisabled)
+      this.submitBtn.disabled = true;
+
     this._events();
   },
 
   _events: function() {
-    var that = this;
-
-    that.el.addEventListener('submit', that._onSubmit.bind(that));
+    this.el.addEventListener('submit', this._onSubmit.bind(this));
   },
 
   _onSubmit: function(e) {
@@ -100,14 +102,18 @@ FormValidation.prototype = {
 
   setValid: function() {
     this.submitBtn.classList.remove(this.settings.classBtnDisabled);
-    this.submitBtn.disabled = false;
+    if (this.settings.submitDisabled)
+      this.submitBtn.disabled = false;
+
     this.el.classList.remove(this.settings.classInvalid);
     this.el.classList.add(this.settings.classValid);
   },
 
   setInvalid: function() {
     this.submitBtn.classList.add(this.settings.classBtnDisabled);
-    this.submitBtn.disabled = true;
+    if (this.settings.submitDisabled)
+      this.submitBtn.disabled = true;
+
     this.el.classList.add(this.settings.classInvalid);
     this.el.classList.remove(this.settings.classValid);
   }

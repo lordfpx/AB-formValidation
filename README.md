@@ -60,6 +60,7 @@ window.abFormValidation({
   "classInvalid":      "isnt-valid",
   "classBtnDisabled":  "is-disabled",
   "typing":            false,
+  "submitDisabled":    true,
   "validations": {
     "badInput":        "error: badInput",
     "patternMismatch": "error: patternMismatch",
@@ -85,6 +86,11 @@ window.abFormValidation({
 * Choose realtime field validation (while typing) or not (onChange):
   ```js
   "typing": false,
+  ```
+
+* DBy default, submit button will be disabled. If you want to validate fields on submit, change setting to `false`:
+  ```js
+  "submitDisabled": true,
   ```
 
 * Personalize error messages triggered by HTML5 Form API:
