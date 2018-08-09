@@ -184,10 +184,11 @@ FormValidation.prototype = {
 
     // prepare form
     this.el.setAttribute('novalidate', 'novalidate');
-    this.submitBtn.classList.add(this.settings.classBtnDisabled);
 
-    if (this.settings.submitDisabled)
+    if (this.settings.submitDisabled && !this.isValid) {
+      this.submitBtn.classList.add(this.settings.classBtnDisabled);
       this.submitBtn.disabled = true;
+    }
 
     this._events();
   },
@@ -203,8 +204,6 @@ FormValidation.prototype = {
     for (var i = 0, len = fields.length; i < len; i++) {
       fields[i].abFieldValidation.checkValidity('submit');
     }
-
-    this.checkValidation();
 
     // trigger event for submit for external usage
     var event = new CustomEvent('submit.ab-formvalidation', {
@@ -222,7 +221,8 @@ FormValidation.prototype = {
   },
 
   _update: function(e) {
-    if (e) e.preventDefault(); // prevent submitting
+    if (e && !this.isValid)
+      e.preventDefault(); // prevent submitting
 
     this.isValid = this.el.checkValidity();
 
@@ -233,18 +233,20 @@ FormValidation.prototype = {
   },
 
   setValid: function() {
-    this.submitBtn.classList.remove(this.settings.classBtnDisabled);
-    if (this.settings.submitDisabled)
+    if (this.settings.submitDisabled) {
+      this.submitBtn.classList.remove(this.settings.classBtnDisabled);
       this.submitBtn.disabled = false;
+    }
 
     this.el.classList.remove(this.settings.classInvalid);
     this.el.classList.add(this.settings.classValid);
   },
 
   setInvalid: function() {
-    this.submitBtn.classList.add(this.settings.classBtnDisabled);
-    if (this.settings.submitDisabled)
+    if (this.settings.submitDisabled) {
+      this.submitBtn.classList.add(this.settings.classBtnDisabled);
       this.submitBtn.disabled = true;
+    }
 
     this.el.classList.add(this.settings.classInvalid);
     this.el.classList.remove(this.settings.classValid);
