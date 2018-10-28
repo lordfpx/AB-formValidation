@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/lordfpx/AB-formValidation.git"
   },
+  "prepublishOnly": "npm run build",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postversion": "git push && git push --tags && npm publish",
@@ -28,7 +29,7 @@
   },
   "homepage": "https://github.com/lordfpx/AB-formValidation#readme",
   "dependencies": {
-    "another-brick": "^1.2.0"
+    "another-brick": "file:../AB"
   },
   "devDependencies": {
     "webpack": "^3.3.0"

@@ -2,37 +2,84 @@
  * AB-formValidation
  */
 
-var AB                = require('another-brick');
-var abFieldValidation = require('./AB-fieldValidation');
-
 'use strict';
 
-var defaults = {
-    classValid:       'is-valid',
-    classInvalid:     'isnt-valid',
-    classBtnDisabled: 'is-disabled',
+window.AB = require('another-brick');
+var fieldValidation = require('./AB-fieldValidation');
 
-    typing:         false,
-    submitDisabled: true,
+var pluginName = 'formValidation',
+    attr       = 'data-ab-form-validation',
+    defaultSettings = {
+      classValid:       'is-valid',
+      classInvalid:     'isnt-valid',
+      classBtnDisabled: 'is-disabled',
 
-    validations: {
-      badInput:        'error: badInput',
-      patternMismatch: 'error: patternMismatch',
-      rangeOverflow:   'error: rangeOverflow',
-      rangeUnderflow:  'error: rangeUnderflow',
-      stepMismatch:    'error: stepMismatch',
-      tooLong:         'error: tooLong',
-      tooShort:        'error: tooShort',
-      typeMismatch:    'error: typeMismatch',
-      valueMissing:    'error: valueMissing'
+      typing:         false,
+      submitDisabled: false,
+
+      validations: {
+        badInput:        'error: badInput',
+        patternMismatch: 'error: patternMismatch',
+        rangeOverflow:   'error: rangeOverflow',
+        rangeUnderflow:  'error: rangeUnderflow',
+        stepMismatch:    'error: stepMismatch',
+        tooLong:         'error: tooLong',
+        tooShort:        'error: tooShort',
+        typeMismatch:    'error: typeMismatch',
+        valueMissing:    'error: valueMissing'
+      }
+    };
+
+var _onSubmit = function(e) {
+  this._update(e);
+
+  var fields = this.el.querySelectorAll('[data-ab-field-validation]');
+  for (var i = 0, len = fields.length; i < len; i++) {
+    fields[i].fieldValidation.checkValidity('submit');
+  }
+
+  // trigger event for submit for external usage
+  var event = new CustomEvent('submit.ab-formvalidation', {
+    detail: {
+      form: this.el,
+      valid: this.isValid
     }
-  };
+  });
+  document.dispatchEvent(event);
+};
 
-function FormValidation(el, options) {
+var _init = function() {
+  // prepare fields validation
+  fieldValidation(this.settings);
+
+  // prepare form
+  this.el.setAttribute('novalidate', 'novalidate');
+
+  if (this.settings.submitDisabled && !this.isValid) {
+    this.submitBtn.classList.add(this.settings.classBtnDisabled);
+    this.submitBtn.disabled = true;
+  }
+
+  this.el.addEventListener('submit', _onSubmit.bind(this));
+};
+
+var _update = function(e) {
+  if (e && !this.isValid)
+    e.preventDefault(); // prevent submitting
+
+  this.isValid = this.el.checkValidity();
+
+  if (this.isValid)
+    this.setValid();
+  else
+    this.setInvalid();
+};
+
+var Plugin = function(el, options) {
   this.el = el;
 
-  var dataOptions = window.AB.isJson(this.el.getAttribute('data-ab-form-validation')) ? JSON.parse(this.el.getAttribute('data-ab-form-validation')) : {};
-  this.settings   = window.AB.extend(true, defaults, options, dataOptions);
+  var dataOptions = window.AB.isJson(this.el.getAttribute(attr)) ? JSON.parse(this.el.getAttribute(attr)) : {};
+  this.settings   = window.AB.extend(true, defaultSettings, options, dataOptions);
 
   this.submitBtn  = this.el.querySelector('[data-ab-form-validation-submit]');
   this.isValid    = this.el.checkValidity(); // form status
@@ -42,62 +89,13 @@ function FormValidation(el, options) {
     return;
   }
 
-  this._init();
-}
+  _init.call(this);
+};
 
-FormValidation.prototype = {
-  _init: function() {
-    // prepare fields validation
-    window.abFieldValidation(this.el, this.settings);
-
-    // prepare form
-    this.el.setAttribute('novalidate', 'novalidate');
-
-    if (this.settings.submitDisabled && !this.isValid) {
-      this.submitBtn.classList.add(this.settings.classBtnDisabled);
-      this.submitBtn.disabled = true;
-    }
-
-    this._events();
-  },
-
-  _events: function() {
-    this.el.addEventListener('submit', this._onSubmit.bind(this));
-  },
-
-  _onSubmit: function(e) {
-    this._update(e);
-
-    var fields = this.el.querySelectorAll('[data-ab-field-validation]');
-    for (var i = 0, len = fields.length; i < len; i++) {
-      fields[i].abFieldValidation.checkValidity('submit');
-    }
-
-    // trigger event for submit for external usage
-    var event = new CustomEvent('submit.ab-formvalidation', {
-      detail: {
-        form: this.el,
-        valid: this.isValid
-      }
-    });
-    document.dispatchEvent(event);
-  },
-
+Plugin.prototype = {
   // external usage to update form
   checkValidation: function() {
-    this._update();
-  },
-
-  _update: function(e) {
-    if (e && !this.isValid)
-      e.preventDefault(); // prevent submitting
-
-    this.isValid = this.el.checkValidity();
-
-    if (this.isValid)
-      this.setValid();
-    else
-      this.setInvalid();
+    _update.call(this);
   },
 
   setValid: function() {
@@ -121,10 +119,18 @@ FormValidation.prototype = {
   }
 };
 
-window.abFormValidation = function(options) {
-  var elements = document.querySelectorAll('[data-ab-form-validation]');
+var formValidation = function(options) {
+  var elements = document.querySelectorAll('['+ attr +']');
   for (var i = 0, len = elements.length; i < len; i++) {
-    if (elements[i].abFormValidation) continue;
-    elements[i].abFormValidation = new FormValidation(elements[i], options);
+    if (elements[i][pluginName])
+      continue;
+    elements[i][pluginName] = new Plugin(elements[i], options);
   }
+
+  // register plugin and options
+  if (!window.AB.options[pluginName])
+    window.AB.options[pluginName] = options;
 };
+
+window.AB.plugins.formValidation = formValidation;
+module.exports = window.AB;
